@@ -139,12 +139,21 @@ public class Practice {
     if (vertex == null || visited.contains(vertex)) return true;
     visited.add(vertex);
 
+    if (vertex.data % 2 == 0) {
+      return false;
+    }
+    if (vertex.neighbors == null) {
+      return true;
+    }
     for (Vertex<Integer> neighbor : vertex.neighbors) {
-      if (neighbor.data % 2 == 0) {
-        return true;
+      if (neighbor == null) {
+        continue;
+      }
+      if (!allOdd(neighbor, visited)) {
+        return false;
       }
     }
-    return false;
+    return true;
   }
 
   /**
@@ -162,6 +171,32 @@ public class Practice {
    * @throws NullPointerException if either start or end is null.
    */
   public boolean hasStrictlyIncreasingPath(Vertex<Integer> start, Vertex<Integer> end) {
+    if (start == null || end == null) {
+      throw new NullPointerException();
+    }
+    if (start == end) {
+      return true;
+    }
+    return hasPath(start, end, new HashSet<>());
+  }
+
+  private boolean hasPath(Vertex<Integer> current, Vertex<Integer> target, Set<Vertex<Integer>> visited) {
+    if (current == null || visited.contains(current) || current.neighbors == null) {
+      return false;
+    }
+    visited.add(current);
+    for (Vertex<Integer> neighbor : current.neighbors) {
+      if (neighbor == null) {
+        continue;
+      }
+      if (neighbor == target && neighbor.data > current.data) {
+        return true;
+      }
+      if (neighbor.data > current.data && hasPath(neighbor, target, visited)) {
+        return true;
+      }
+    }
+    visited.remove(current);
     return false;
   }
 }
